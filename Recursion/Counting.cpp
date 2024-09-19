@@ -1,12 +1,12 @@
 #include<iostream>
 using namespace std;
 
-int factorial(int n){
+int Counting(int n){
 
     //base case
-    if(n==0) return 1;
-
-    return n*factorial(n-1);
+    if(n==0) return ;
+    return Counting(n-1);
+    cout<<n<<endl;
 }
 
 int main(){
