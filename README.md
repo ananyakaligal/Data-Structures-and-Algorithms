@@ -1,1 +1,1 @@
-This repository contains all DSA practice codes
+This repository contains all the DSA practice codes
