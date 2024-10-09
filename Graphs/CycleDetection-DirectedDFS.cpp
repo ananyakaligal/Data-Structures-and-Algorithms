@@ -5,60 +5,58 @@
 
 using namespace std;
 
-// DFS to detect cycles in a directed graph
-bool isCyclicDFS(int node, unordered_map<int, bool>& visited, unordered_map<int, bool>& dfsVisited, unordered_map<int, list<int>>& adj) {
-    visited[node] = true;       // Mark the node as visited
-    dfsVisited[node] = true;    // Mark the node in the current DFS path
+// DFS to detect cycles in directed graph
+bool isCyclicDFS(int node, unordered_map<int, bool>& visited, unordered_map<int, bool>& recStack, unordered_map<int, list<int>>& adj) {
+    visited[node] = true;    // Mark visited
+    recStack[node] = true;   // Mark recursion stack
 
-    // Explore all neighbors
     for (auto neighbour : adj[node]) {
         if (!visited[neighbour]) {
-            if (isCyclicDFS(neighbour, visited, dfsVisited, adj)) return true; // Cycle found
-        } else if (dfsVisited[neighbour]) {
-            return true; // Cycle detected if already visited in current DFS path
+            if (isCyclicDFS(neighbour, visited, recStack, adj)) return true; // Cycle found
+        } 
+        else if (recStack[neighbour]) {
+            return true; // Cycle detected
         }
     }
 
-    dfsVisited[node] = false;   // Unmark the node for the current DFS path
-    return false;               // No cycle detected
+    recStack[node] = false;  // Remove from recursion stack
+    return false;            // No cycle
 }
 
-// Detect cycles in the directed graph
-string cycleDetection(int n, vector<pair<int, int>>& edges) {
+// Detect cycles in directed graph
+string cycleDetectionDirected(vector<vector<int>>& edges, int n, int m) {
     unordered_map<int, list<int>> adj;
 
-    // Create adjacency list for the directed graph
-    for (int i = 0; i < edges.size(); i++) {
-        int u = edges[i].first;
-        int v = edges[i].second;
-
-        adj[u].push_back(v); // Only directed edge u -> v
+    // Build adjacency list
+    for (int i = 0; i < m; i++) {
+        int u = edges[i][0];
+        int v = edges[i][1];
+        adj[u].push_back(v); // Directed edge from u to v
     }
 
-    unordered_map<int, bool> visited;    // Track visited nodes
-    unordered_map<int, bool> dfsVisited; // Track nodes in the current DFS path
+    unordered_map<int, bool> visited;   // Track visited nodes
+    unordered_map<int, bool> recStack;  // Track recursion stack
 
-    // Traverse each node to handle disconnected components
+    // Check for cycles
     for (int i = 0; i < n; i++) {
         if (!visited[i]) {
-            if (isCyclicDFS(i, visited, dfsVisited, adj)) return "Yes"; // Cycle found
+            if (isCyclicDFS(i, visited, recStack, adj)) return "Yes"; // Cycle found
         }
     }
-    return "No"; // No cycle detected
+    return "No"; // No cycle
 }
 
-// Main function
+// Main function with sample input
 int main() {
-    // Sample input: 4 nodes, 4 edges
-    int n = 4;
-    vector<pair<int, int>> edges = {
-        {0, 1},   // Directed edge from 0 to 1
-        {1, 2},   // Directed edge from 1 to 2
-        {2, 3},   // Directed edge from 2 to 3
-        {3, 1}    // Directed edge from 3 to 1 (this creates a cycle)
+    int n = 4, m = 4; 
+    vector<vector<int>> edges = {
+        {0, 1},
+        {1, 2},
+        {2, 3},
+        {3, 1}  // Cycle here
     };
 
-    string result = cycleDetection(n, edges);
+    string result = cycleDetectionDirected(edges, n, m);
     cout << "Cycle Detection Result: " << result << endl;
 
     return 0;
